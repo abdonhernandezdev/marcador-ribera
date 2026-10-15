@@ -25,11 +25,11 @@ Las reglas están en `assets/rules.js`: sets a 25 con dos de diferencia, quinto 
 
 | Parámetro | Qué hace |
 | --- | --- |
-| *(ninguno)* | El marcador ocupa el widget entero: en PRISM se coloca arrastrando y pellizcando. |
+| *(ninguno)* | Si el widget tiene forma de vídeo (16:9, por ejemplo 1920×1080 en Moblin u OBS), el marcador va en la esquina ocupando un 30 % del ancho. Con cualquier otra forma, llena el widget y se coloca arrastrando y pellizcando (PRISM). |
 | `canal=palabra` | Usa otro canal (control y marcador deben llevar el mismo). |
-| `pantalla=1` | La página es el vídeo entero y el marcador va en una esquina. Para OBS o PRISM en ordenador (fuente de navegador 1920×1080). |
+| `pantalla=1` / `pantalla=0` | Fuerza el modo «vídeo entero con el marcador en la esquina» o el modo «llenar el widget». |
 | `pos=tl` / `tr` / `bl` / `br` | Esquina del marcador (arriba-izquierda por defecto). |
-| `escala=1.2` | Tamaño del marcador con `pantalla=1`. |
+| `escala=1.2` | Tamaño del marcador en modo vídeo entero (1 = 30 % del ancho). |
 | `fondo` | Fondo de cuadros para comprobar la transparencia. |
 | `debug` | Muestra el canal y qué servidores están conectados. |
 | `demo=1` | Partido simulado, sin conexión (es lo que se ve en la página de inicio). |

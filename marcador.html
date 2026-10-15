@@ -120,15 +120,23 @@
   const pos = (q.get('pos') || 'tl').toLowerCase();
   if (pos.includes('r')) document.body.classList.add('right');
 
-  /* Default: the scoreboard fills the widget, so in PRISM you place it by dragging and
-     pinching the widget box. ?pantalla=1: the page is the whole video frame and the board
-     sits in a corner (?pos=tl|tr|bl|br, ?escala=1.2), handy for OBS or PRISM on a computer. */
+  /* Two layouts:
+     - whole video frame (16:9 or 9:16 widget, e.g. Moblin 1920x1080, OBS): the board sits in a
+       corner, about 30% of the width (?pos=tl|tr|bl|br, ?escala=1.2 to resize);
+     - any other widget shape (e.g. a box in PRISM): the board fills the widget.
+     ?pantalla=1 / ?pantalla=0 force one or the other. */
+  function isVideoFrame(W, H) {
+    const r = W / H;
+    return Math.abs(r - 16 / 9) < 0.12 || Math.abs(r - 9 / 16) < 0.04;
+  }
+
   function layout() {
     const W = window.innerWidth, H = window.innerHeight;
     if (!W || !H) return;
     const stage = $('#stage');
     let scale, x, y;
-    if (q.get('pantalla') === '1') {
+    const forced = q.get('pantalla');
+    if (forced === null ? isVideoFrame(W, H) : forced !== '0') {
       const mult = parseFloat(q.get('escala') || '1') || 1;
       scale = ((W >= H ? 0.3 : 0.62) * W * mult) / DESIGN_W;
       const m = 0.025 * Math.min(W, H * 16 / 9);

@@ -241,9 +241,29 @@ function check(cond, msg) { console.log((cond ? '  ok   ' : '  FAIL ') + msg); i
   await sleep(1200);
   const buf = await tp.screenshot({ omitBackground: true, path: path.join(SHOTS, 'marcador_transparente.png') });
   check(buf.length > 0, 'transparent screenshot taken');
+  const box = () => tp.evaluate(() => { const r = document.querySelector('#board').getBoundingClientRect(); return { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width) }; });
+  // a 16:9 widget (Moblin 1920x1080, OBS) without parameters: board in the top-left corner, ~30% wide
+  await tp.setViewportSize({ width: 1920, height: 1080 });
+  await sleep(700);
+  let b = await box();
+  check(Math.abs(b.w - 576) < 4 && b.x < 60 && b.y < 60, `1920x1080 without parameters: corner board ${JSON.stringify(b)}`);
+  await tp.screenshot({ omitBackground: true, path: path.join(SHOTS, 'marcador_1920x1080.png') });
+  // a non-video widget box (PRISM): the board fills it
   await tp.setViewportSize({ width: 600, height: 400 });
-  await sleep(400);
+  await sleep(700);
+  b = await box();
+  check(b.w > 560, `600x400 widget: board fills it ${JSON.stringify(b)}`);
   await tp.screenshot({ omitBackground: true, path: path.join(SHOTS, 'marcador_widget_600x400.png') });
+  // forcing each mode
+  await tp.goto(`http://localhost:8000/marcador.html?pantalla=0&broker=ws://localhost:8889&canal=${CH}`);
+  await tp.setViewportSize({ width: 1920, height: 1080 });
+  await sleep(900);
+  b = await box();
+  check(b.w > 1800, `?pantalla=0 forces fill mode ${JSON.stringify(b)}`);
+  await tp.goto(`http://localhost:8000/marcador.html?pantalla=1&escala=0.8&broker=ws://localhost:8889&canal=${CH}`);
+  await sleep(900);
+  b = await box();
+  check(Math.abs(b.w - 461) < 4, `?pantalla=1&escala=0.8 makes it smaller ${JSON.stringify(b)}`);
   await clean.close();
 
   console.log('12. home page');
