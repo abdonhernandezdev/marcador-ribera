@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0d0d10" />
+<meta name="description" content="Marcador en directo de AD Voleibol Ribera para los partidos en YouTube." />
+<link rel="icon" href="assets/icono-64.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<title>Marcador en directo · AD Voleibol Ribera</title>
+<style>
+  @font-face { font-family: 'BSC'; src: url('assets/fonts/barlow-sc-black.woff2') format('woff2'); font-weight: 900; font-display: swap; }
+  @font-face { font-family: 'Mont'; src: url('assets/fonts/montserrat.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+  :root { --red: #e3161e; --bg: #0d0d10; --card: #17171c; --card2: #1f1f26; --line: rgba(255, 255, 255, 0.09); --muted: rgba(255, 255, 255, 0.64); }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { margin: 0 auto; max-width: 760px; padding: 0 16px calc(40px + env(safe-area-inset-bottom)); background: var(--bg); color: #fff;
+         font: 500 15.5px/1.55 'Mont', system-ui, sans-serif; -webkit-text-size-adjust: 100%; overflow-wrap: break-word; }
+  .cards > *, ol.steps > li, ul.tips > li { min-width: 0; }
+  a { color: #fff; }
+  b, strong { font-weight: 700; }
+
+  .hero { display: flex; align-items: center; gap: 14px; padding: 22px 0 16px; }
+  .hero img { width: 64px; height: auto; flex: none; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5)); }
+  .kicker { margin: 0; font: 700 11.5px/1.2 'Mont'; letter-spacing: 0.2em; color: var(--red); }
+  h1 { margin: 4px 0 0; font: 900 clamp(30px, 8vw, 44px)/0.95 'BSC'; letter-spacing: 0.02em; }
+
+  .preview { position: relative; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #222 url('assets/pabellon.jpg') center / cover no-repeat;
+             box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5); }
+  .preview iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; pointer-events: none; }
+  .preview .live { position: absolute; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 6px;
+                   background: rgba(0, 0, 0, 0.6); font: 700 10.5px/1 'Mont'; letter-spacing: 0.14em; }
+  .preview .live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: blink 1.2s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+  .caption { margin: 8px 2px 0; font-size: 12.5px; color: var(--muted); }
+
+  .cards { display: grid; gap: 12px; margin-top: 22px; }
+  @media (min-width: 640px) { .cards { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--card); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; border-top: 4px solid var(--red); }
+  .card .who { font: 700 11px/1 'Mont'; letter-spacing: 0.18em; color: var(--muted); }
+  .card h2 { margin: 0; font: 900 26px/1 'BSC'; letter-spacing: 0.03em; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .link { padding: 10px 12px; border-radius: 10px; background: #0f0f13; border: 1px dashed #3a3a44; font: 600 13px/1.4 'Mont'; word-break: break-all;
+          user-select: all; -webkit-user-select: all; color: #e8e8ea; }
+  .btn { display: flex; align-items: center; justify-content: center; min-height: 50px; padding: 8px 14px; border: 0; border-radius: 10px; background: #26262e;
+         color: #fff; font: 700 15px/1.2 'Mont', system-ui, sans-serif; text-decoration: none; cursor: pointer; touch-action: manipulation; }
+  .btn.primary { background: var(--red); }
+  .btn:active { transform: translateY(1px); }
+
+  .note { margin-top: 22px; padding: 14px 16px; border-radius: 12px; background: #2b2410; border: 1px solid #5c4a12; color: #ffe7a3; font-size: 14.5px; }
+  .note b { color: #fff3cf; }
+
+  h2.sec { margin: 34px 0 6px; font: 900 30px/1 'BSC'; letter-spacing: 0.03em; }
+  h2.sec + p { margin: 0 0 10px; color: var(--muted); }
+  h3 { margin: 22px 0 8px; font: 900 18px/1.1 'BSC'; letter-spacing: 0.08em; color: var(--red); }
+  ol.steps { list-style: none; counter-reset: s; margin: 0; padding: 0; display: grid; gap: 8px; }
+  ol.steps > li { counter-increment: s; position: relative; background: var(--card); border-radius: 12px; padding: 13px 14px 13px 54px; }
+  ol.steps > li::before { content: counter(s); position: absolute; left: 13px; top: 12px; width: 28px; height: 28px; border-radius: 8px; background: var(--red);
+                          display: flex; align-items: center; justify-content: center; font: 900 17px/1 'BSC'; }
+  ol.steps > li b:first-child { display: block; margin-bottom: 2px; }
+  .path { display: inline; padding: 1px 6px; border-radius: 6px; background: var(--card2); border: 1px solid #33333d; font-weight: 700; font-size: 13.5px;
+          line-height: 1.9; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  ul.tips { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  ul.tips li { background: var(--card); border-radius: 12px; padding: 12px 14px; }
+  details.faq { background: var(--card); border-radius: 12px; padding: 0 14px; margin-top: 8px; }
+  details.faq summary { padding: 13px 0; font-weight: 700; cursor: pointer; }
+  details.faq p { margin: 0 0 14px; color: var(--muted); }
+  footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+  footer a { color: var(--muted); }
+  #toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(140px); background: #fff; color: #111; padding: 10px 16px;
+           border-radius: 10px; font: 700 13px 'Mont', system-ui, sans-serif; transition: transform 0.25s; z-index: 5; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); }
+  #toast.on { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<header class="hero">
+  <img src="assets/escudos/ribera.png" alt="Escudo AD Voleibol Ribera" />
+  <div>
+    <p class="kicker">AD VOLEIBOL RIBERA</p>
+    <h1>MARCADOR EN DIRECTO</h1>
+  </div>
+</header>
+
+<div class="preview">
+  <iframe src="marcador.html?demo=1&amp;pantalla=1" title="Vista previa del marcador" scrolling="no" tabindex="-1"></iframe>
+  <span class="live">VISTA PREVIA</span>
+</div>
+<p class="caption">Así se ve encima del vídeo. En la vista previa el partido se juega solo.</p>
+
+<section class="cards">
+  <article class="card">
+    <span class="who">MÓVIL QUE GRABA</span>
+    <h2>Enlace para PRISM</h2>
+    <p>Se pega una sola vez en PRISM, como widget «Web».</p>
+    <div class="link" id="ovl"></div>
+    <button class="btn primary" data-copy="ovl">Copiar enlace del marcador</button>
+  </article>
+  <article class="card">
+    <span class="who">MÓVIL DE LA MESA</span>
+    <h2>Control del marcador</h2>
+    <p>Quien apunta los puntos lo abre en su móvil. Funciona en cualquier navegador.</p>
+    <div class="link" id="ctl"></div>
+    <a class="btn primary" href="control.html">Abrir el control</a>
+    <button class="btn" data-copy="ctl">Copiar enlace para enviarlo</button>
+  </article>
+</section>
+
+<div class="note"><b>Hacen falta dos móviles:</b> uno graba y emite con PRISM; el otro, en la mesa, lleva el marcador. Los dos necesitan internet (datos o wifi), pero no tienen que estar en la misma red.</div>
+
+<h2 class="sec">PASO A PASO</h2>
+<p>Hazlo una vez con calma en casa y el día del partido son dos minutos.</p>
+
+<h3>ANTES DEL PRIMER DIRECTO</h3>
+<ol class="steps">
+  <li><b>Activa los directos en YouTube (24 h antes como mínimo)</b>
+    Entra en <a href="https://studio.youtube.com" target="_blank" rel="noopener">YouTube Studio</a> con la cuenta del club y pulsa <span class="path">Crear → Emitir en directo</span>. Si es la primera vez, te pedirá verificar el canal con un número de teléfono y <b>tardará hasta 24 horas</b> en activarse. Si ya habéis emitido otras veces, no hace falta.</li>
+  <li><b>Instala PRISM Live Studio</b>
+    Gratis en <a href="https://play.google.com/store/apps/details?id=com.prism.live" target="_blank" rel="noopener">Android</a> y <a href="https://apps.apple.com/app/id1319056339" target="_blank" rel="noopener">iPhone</a>, en el móvil que va a grabar. Entra con la cuenta de YouTube del club. A diferencia de la app de YouTube, no pide un mínimo de suscriptores para emitir desde el móvil.</li>
+  <li><b>Añade el marcador a PRISM</b>
+    En la pantalla principal de PRISM, desliza el dedo hacia la izquierda para abrir <span class="path">My Studio</span>. Toca <span class="path">Widget → Web</span>, pega el enlace del marcador (si el campo ya trae «https://», no lo repitas), ponle de nombre «Marcador» y guarda.</li>
+  <li><b>Colócalo en la imagen</b>
+    Con el móvil en horizontal, toca la tarjeta «Marcador» en My Studio para que aparezca. Arrástralo a la esquina de arriba a la izquierda, pellizca para darle tamaño (más o menos un tercio del ancho) y bloquéalo con el candado para que no se mueva.</li>
+  <li><b>Haz una prueba</b>
+    Abre el control en el otro móvil, suma un par de puntos y mira cómo cambian en PRISM (tarda menos de un segundo). Para terminar, en <span class="path">Ajustes del partido → Nuevo partido</span> lo dejas a 0-0.</li>
+</ol>
+
+<h3>EL DÍA DEL PARTIDO</h3>
+<ol class="steps">
+  <li><b>Móvil que graba</b>
+    Batería cargada o powerbank, trípode, en horizontal y con «No molestar» activado. Mejor con el wifi del pabellón si va bien; si no, buena cobertura 4G/5G.</li>
+  <li><b>PRISM listo</b>
+    Elige YouTube, pon la orientación horizontal y comprueba en My Studio que el marcador está activo. Ojo: si cierras PRISM, al volver a abrirlo hay que tocar de nuevo la tarjeta «Marcador».</li>
+  <li><b>Móvil de la mesa</b>
+    Abre el control y espera a ver <b>Conectado</b> en verde. En <span class="path">Ajustes del partido</span> revisa el texto de arriba (por ejemplo, SENIOR FEMENINO · JORNADA 1) y los equipos.</li>
+  <li><b>A emitir</b>
+    En PRISM pulsa el botón de empezar el directo. Comparte el enlace del directo en las redes del club.</li>
+</ol>
+
+<h3>DURANTE EL PARTIDO</h3>
+<ul class="tips">
+  <li><b>+1</b> al equipo que gana cada punto. El icono del balón (quién saca) se mueve solo.</li>
+  <li>Al llegar al final de un set sale «SET PARA…». Cuando los equipos cambien de campo, pulsa <b>Cerrar set</b> y empieza el siguiente a 0-0 (el saque inicial se alterna solo).</li>
+  <li>¿Un punto mal puesto? <b>Deshacer</b> o <b>−1</b>.</li>
+  <li><b>Tiempo muerto</b> muestra un aviso con una barra de 30 segundos.</li>
+  <li>El interruptor <b>Marcador en pantalla</b> lo oculta un momento (por ejemplo, en el calentamiento).</li>
+  <li>Entre un partido y otro: <span class="path">Ajustes del partido</span>, cambia el texto de arriba (y los equipos si hace falta) y pulsa <b>Nuevo partido</b>.</li>
+  <li>Consejo: en el móvil de la mesa, «Añadir a pantalla de inicio» deja el control como si fuera una app.</li>
+</ul>
+
+<h3>SI ALGO FALLA</h3>
+<details class="faq"><summary>El control dice «Sin conexión»</summary>
+  <p>Revisa los datos o el wifi de ese móvil. Algunas redes wifi públicas bloquean este tipo de conexión: si pasa en el pabellón, usa los datos móviles. Mientras tanto puedes seguir apuntando; en cuanto vuelva la conexión, el marcador del vídeo se pone al día solo.</p></details>
+<details class="faq"><summary>El marcador no aparece en PRISM</summary>
+  <p>Abre My Studio y toca la tarjeta «Marcador». Si aun así no sale, borra el widget y vuelve a pegar el enlace. Comprueba que el móvil que graba tiene internet.</p></details>
+<details class="faq"><summary>El marcador del vídeo no cambia o muestra otro resultado</summary>
+  <p>Suma y resta un punto en el control: el marcador siempre se queda con lo último que se ha enviado. Si en la pantalla del control pone «Conectado», el vídeo lo recibe.</p></details>
+<details class="faq"><summary>Dos partidos a la vez, o alguien mete resultados raros</summary>
+  <p>Usad otro canal: en el control, <span class="path">Ajustes → Canal</span>, escribe una palabra nueva y pulsa Cambiar. Después copia el nuevo enlace del marcador y pégalo en PRISM.</p></details>
+
+<footer>
+  AD Voleibol Ribera · Ribera del Fresno · <a href="https://www.instagram.com/a.d.voleibolribera/" target="_blank" rel="noopener">@a.d.voleibolribera</a><br />
+  El resultado viaja por servidores MQTT públicos y gratuitos (EMQX, HiveMQ y Mosquitto); si uno falla, siguen los otros.
+</footer>
+<div id="toast" role="status"></div>
+
+<script src="assets/sync.js"></script>
+<script>
+(function () {
+  'use strict';
+  const chan = Sync.channel();
+  const q = chan === Sync.DEFAULT_CHANNEL ? '' : '?canal=' + chan;
+  const links = {
+    ovl: new URL('marcador.html' + q, location.href).href,
+    ctl: new URL('control.html' + q, location.href).href,
+  };
+  document.getElementById('ovl').textContent = links.ovl;
+  document.getElementById('ctl').textContent = links.ctl;
+  document.querySelector('a[href="control.html"]').href = links.ctl;
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('on'), 2000);
+  }
+  document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', async () => {
+    const text = links[b.dataset.copy];
+    try { await navigator.clipboard.writeText(text); toast('Enlace copiado'); }
+    catch (e) {
+      const r = document.createRange(); r.selectNodeContents(document.getElementById(b.dataset.copy));
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      toast('Mantén pulsado el enlace para copiarlo');
+    }
+  }));
+})();
+</script>
+</body>
+</html>

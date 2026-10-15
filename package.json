@@ -1,0 +1,16 @@
+{
+  "name": "marcador-ribera",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Marcador en directo de AD Voleibol Ribera para emitir en YouTube con PRISM Live Studio",
+  "scripts": {
+    "test": "node test/rules.test.js",
+    "test:e2e": "node test/e2e.js"
+  },
+  "devDependencies": {
+    "aedes": "^0.51.3",
+    "mqtt": "^5.16.1",
+    "playwright-core": "^1.64.1",
+    "ws": "^8.22.0"
+  }
+}
