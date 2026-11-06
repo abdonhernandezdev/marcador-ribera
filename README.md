@@ -34,6 +34,19 @@ Las reglas están en `assets/rules.js`: sets a 25 con dos de diferencia, quinto 
 | `debug` | Muestra el canal y qué servidores están conectados. |
 | `demo=1` | Partido simulado, sin conexión (es lo que se ve en la página de inicio). |
 
+## Preparar los partidos de la semana
+
+En `assets/partidos.js` van los partidos que se van a emitir: texto de arriba, equipos (nombre de hasta 14 letras, color y escudo) y formato. En el control salen en **Ajustes del partido → Partido preparado**: al elegir uno se rellena el formulario y con **Nuevo partido** empieza a 0-0.
+
+```js
+{
+  label: 'SENIOR MASCULINO · JORNADA 2', cuando: 'Sábado 7 nov · 19:30 · Almendralejo',
+  home: { name: 'ALMENDRALEJO', color: '#059e2e', crest: 'cva' },
+  away: { name: 'RIBERA', color: '#e3161e', crest: 'ribera' },
+  bestOf: 5, target: 25, tieTarget: 15,
+},
+```
+
 ## Añadir el escudo de otro equipo
 
 1. Guarda un PNG con fondo transparente, de unos 180 px de alto, en `assets/escudos/` con un nombre en minúsculas y sin espacios, por ejemplo `villafranca.png`.
@@ -61,4 +74,4 @@ El canal está en el código, así que quien lo conozca podría publicar un resu
 
 - Tipografías: Barlow Semi Condensed y Montserrat, con licencia SIL Open Font License 1.1 (`assets/fonts/OFL-*.txt`), recortadas a caracteres latinos.
 - [MQTT.js](https://github.com/mqttjs/MQTT.js) 5.16, licencia MIT (`assets/LICENSE-mqtt.md`).
-- Escudos: AD Voleibol Ribera y Club Voleibol A7, propiedad de cada club.
+- Escudos: AD Voleibol Ribera, Club Voleibol A7 y CVA Almendralejo, propiedad de cada club.
