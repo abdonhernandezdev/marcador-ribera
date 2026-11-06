@@ -128,6 +128,11 @@
 
 <details id="setup">
   <summary>⚙ Ajustes del partido</summary>
+  <div id="presetrow">
+    <label class="f">Partido preparado</label>
+    <select id="preset"></select>
+    <p class="hint">Elige el partido: se rellenan los nombres, escudos y textos de abajo. Luego pulsa <b>Nuevo partido</b>.</p>
+  </div>
   <label class="f">Partido (texto de arriba)</label>
   <input id="lbl" maxlength="40" list="labels" />
   <datalist id="labels">
@@ -168,6 +173,7 @@
 <script src="assets/rules.js"></script>
 <script src="assets/sync.js"></script>
 <script src="assets/escudos/escudos.js"></script>
+<script src="assets/partidos.js"></script>
 <script>
 (function () {
   'use strict';
@@ -221,7 +227,15 @@
       const card = $('#t' + i);
       card.style.setProperty('--c', t.color);
       card.style.setProperty('--ct', textColor(t.color));
-      card.querySelector('.nm').textContent = t.name;
+      const nm = card.querySelector('.nm');
+      if (nm.textContent !== t.name || nm.dataset.w !== String(nm.clientWidth)) {
+        // long names (ALMENDRALEJO) get smaller instead of being cut with "…"
+        nm.textContent = t.name;
+        nm.style.fontSize = ''; nm.style.letterSpacing = '';
+        if (nm.scrollWidth > nm.clientWidth) nm.style.letterSpacing = '0';
+        for (let size = 22; nm.scrollWidth > nm.clientWidth && size > 10; size--) nm.style.fontSize = size - 1 + 'px';
+        nm.dataset.w = String(nm.clientWidth);
+      }
       const cr = card.querySelector('.cr');
       const src = t.crest ? 'assets/escudos/' + t.crest + '.png' : '';
       if ((cr.getAttribute('src') || '') !== src) {
@@ -264,14 +278,38 @@
     sel.innerHTML = list.join('') + '<option value="">Sin escudo</option>';
   }
 
-  function fillSetup() {
-    [state.home, state.away].forEach((t, i) => {
-      $('#n' + i).value = t.name;
-      $('#c' + i).value = t.color;
-      const sel = $('#e' + i);
-      if (t.crest && !sel.querySelector(`option[value="${t.crest}"]`)) sel.insertAdjacentHTML('afterbegin', `<option value="${t.crest}">Escudo: ${t.crest}</option>`);
-      sel.value = t.crest || '';
+  function setTeamFields(i, t) {
+    $('#n' + i).value = t.name;
+    $('#c' + i).value = t.color;
+    const sel = $('#e' + i);
+    if (t.crest && !sel.querySelector(`option[value="${t.crest}"]`)) sel.insertAdjacentHTML('afterbegin', `<option value="${t.crest}">Escudo: ${t.crest}</option>`);
+    sel.value = t.crest || '';
+  }
+
+  /* matches prepared in assets/partidos.js: picking one fills the form, "Nuevo partido" starts it */
+  const esc = (x) => String(x).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function presetOptions() {
+    const list = window.PARTIDOS || [];
+    $('#presetrow').hidden = !list.length;
+    $('#preset').innerHTML = '<option value="">Elegir partido…</option>' + list.map((p, i) =>
+      `<option value="${i}">${esc(p.label)} · ${esc(p.home.name)} – ${esc(p.away.name)}</option>`).join('');
+    list.forEach((p) => {
+      if (![...$('#labels').options].some((o) => o.value === p.label)) $('#labels').insertAdjacentHTML('afterbegin', `<option value="${esc(p.label)}"></option>`);
     });
+  }
+  $('#preset').addEventListener('change', () => {
+    const p = (window.PARTIDOS || [])[+$('#preset').value];
+    if (!$('#preset').value || !p) return;
+    setTeamFields(0, p.home);
+    setTeamFields(1, p.away);
+    $('#lbl').value = p.label;
+    $('#bo').value = String(p.bestOf || 5); $('#tg').value = String(p.target || 25); $('#tb').value = String(p.tieTarget || 15);
+    toast('Partido cargado · pulsa Nuevo partido');
+  });
+
+  function fillSetup() {
+    [state.home, state.away].forEach((t, i) => setTeamFields(i, t));
+    $('#preset').value = '';
     $('#lbl').value = state.label;
     $('#bo').value = String(state.bestOf); $('#tb').value = String(state.tieTarget); $('#tg').value = String(state.target);
     const url = new URL('marcador.html', location.href);
@@ -332,6 +370,7 @@
 
   // ---- start
   crestOptions($('#e0')); crestOptions($('#e1'));
+  presetOptions();
   state = load();
   render();
   fillSetup();

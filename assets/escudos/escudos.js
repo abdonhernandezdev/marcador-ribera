@@ -4,4 +4,5 @@
 window.ESCUDOS = [
   { id: 'ribera', nombre: 'AD Voleibol Ribera' },
   { id: 'a7', nombre: 'Club Voleibol A7' },
+  { id: 'cva', nombre: 'CVA Almendralejo' },
 ];

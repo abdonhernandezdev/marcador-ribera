@@ -200,6 +200,14 @@ function check(cond, msg) { console.log((cond ? '  ok   ' : '  FAIL ') + msg); i
   await ctl.fill('#lbl', 'senior femenino · jornada 2');
   await tap('#reset');
   await expect(ovl, { p: '0-0', s: '0-0', set: 'SET 1', tag: '', label: 'SENIOR FEMENINO · JORNADA 2' }, 'new match 0-0 also saves the edited text');
+  const femIdx = await ctl.evaluate(() => window.PARTIDOS.findIndex((p) => p.label.includes('FEMENINO')));
+  await ctl.selectOption('#preset', String(femIdx));
+  check((await ctl.inputValue('#n1')) === 'ALMENDRALEJO' && (await ctl.inputValue('#e1')) === 'cva'
+    && (await ctl.inputValue('#lbl')) === 'SENIOR FEMENINO · JORNADA 3', 'prepared match fills the form');
+  await tap('#reset');
+  await expect(ovl, { p: '0-0', s: '0-0', label: 'SENIOR FEMENINO · JORNADA 3', n0: 'RIBERA', n1: 'ALMENDRALEJO' }, 'prepared match on the overlay');
+  check(await ovl.evaluate(() => [...document.querySelectorAll('.crest img')].some((i) => /cva\.png$/.test(i.src) && i.naturalWidth > 0)),
+    'rival crest shows on the overlay');
   await ctl.evaluate(() => document.querySelector('#setup').scrollIntoView());
   await ctl.screenshot({ path: path.join(SHOTS, 'control_ajustes.png'), fullPage: true });
 
